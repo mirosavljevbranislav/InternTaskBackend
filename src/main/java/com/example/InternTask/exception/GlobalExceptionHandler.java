@@ -5,6 +5,9 @@ import com.example.InternTask.exception.TrainerExceptions.ScheduleNotFoundExcept
 import com.example.InternTask.exception.TrainerExceptions.TrainerNotFoundException;
 import com.example.InternTask.exception.TrainingExceptions.InvalidTrainingTimeException;
 import com.example.InternTask.exception.TrainingExceptions.TrainingOverlapException;
+import com.example.InternTask.exception.AuthExceptions.InvalidEmailException;
+import com.example.InternTask.exception.AuthExceptions.InvalidPhoneNumberException;
+import com.example.InternTask.exception.UserExpcetions.UserAlreadyExistsException;
 import com.example.InternTask.exception.UserExpcetions.UserCredentialsFailException;
 import com.example.InternTask.exception.UserExpcetions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidPhoneNumberException.class)
+    public ResponseEntity<String> invalidPhoneNumberException(InvalidPhoneNumberException ex) {
+        return ResponseEntity.status(HttpStatus.LENGTH_REQUIRED).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidEmailException.class)
+    public ResponseEntity<String> invalidEmailException(InvalidEmailException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
     @ExceptionHandler(UserCredentialsFailException.class)
     public ResponseEntity<String> handleTrainerNotFound(UserCredentialsFailException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -31,6 +44,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleTrainerNotFound(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> userAlreadyExistsException(UserAlreadyExistsException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 

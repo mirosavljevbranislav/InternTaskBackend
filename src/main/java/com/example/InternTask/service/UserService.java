@@ -1,17 +1,12 @@
 package com.example.InternTask.service;
 
-import com.example.InternTask.exception.TrainerExceptions.ScheduleNotFoundException;
-import com.example.InternTask.exception.TrainerExceptions.TrainerNotFoundException;
-import com.example.InternTask.exception.TrainingExceptions.InvalidTrainingTimeException;
-import com.example.InternTask.exception.TrainingExceptions.TrainingNotFoundException;
-import com.example.InternTask.exception.TrainingExceptions.TrainingOverlapException;
-import com.example.InternTask.model.Trainer;
-import com.example.InternTask.model.Training;
+import com.example.InternTask.exception.AuthExceptions.InvalidEmailException;
+import com.example.InternTask.exception.AuthExceptions.InvalidPhoneNumberException;
+import com.example.InternTask.exception.UserExpcetions.UserAlreadyExistsException;
 import com.example.InternTask.model.User;
 import com.example.InternTask.repository.MapRepo;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -22,12 +17,23 @@ public class UserService {
         this.mapRepo = mapRepo;
     }
 
-    public boolean addUser(User user) {
-        if (mapRepo.getUsers().containsKey(user.getPhone())) {
-            return false; // user already exists
+    public void addUser(User user) {
+        String phone = user.getPhone();
+        if (phone == null || phone.length() != 10) {
+            throw new InvalidPhoneNumberException("Phone number must be 10 digits long.");
         }
-        mapRepo.getUsers().put(user.getPhone(), user);
-        return true;
+        if (user.getEmail() == null || !user.getEmail().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
+            throw new InvalidEmailException("Invalid email format.");
+        }
+        boolean emailExists = mapRepo.getUsers().values().stream()
+                .anyMatch(existingUser -> user.getEmail().equalsIgnoreCase(existingUser.getEmail()));
+        if (emailExists) {
+            throw new UserAlreadyExistsException("User with that email already exists.");
+        }
+        if (mapRepo.getUsers().containsKey(phone)) {
+            throw new UserAlreadyExistsException("User with that phone already exists"); // User already exists
+        }
+        mapRepo.getUsers().put(phone, user);
     }
 
     public List<User> getAllUsers() {
@@ -41,52 +47,4 @@ public class UserService {
     public User getUserByPhoneNumber(String phoneNumber){
         return mapRepo.getUsers().get(phoneNumber);
     }
-
-
-
-
-
 }
-
-
-//package com.example.InternTask.service;
-//
-//import com.example.InternTask.exception.UserExpcetions.UserNotFoundException;
-//import com.example.InternTask.model.User;
-//import com.example.InternTask.repository.UserRepo;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//import java.util.Random;
-//
-//@Service
-//public class UserService {
-//    private final UserRepo userRepo;
-//
-//    @Autowired
-//    public UserService(UserRepo userRepo) {
-//        this.userRepo = userRepo;
-//    }
-//
-//    public User addUser(User user) {
-//        return userRepo.save(user);
-//    }
-//
-//    public List<User> findAllUsers() {
-//        return userRepo.findAll();
-//    }
-//
-//    public User updateUser(User user) {
-//        return userRepo.save(user);
-//    }
-//
-//    public User findUserById(Long id) {
-//        return userRepo.findUserById(id)
-//                .orElseThrow(() -> new UserNotFoundException("User by that id was not found..."));
-//    }
-//
-//    public void deleteUser(Long id) {
-//         userRepo.deleteUserById(id);
-//    }
-//}

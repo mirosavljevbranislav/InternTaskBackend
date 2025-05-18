@@ -1,10 +1,8 @@
 package com.example.InternTask.controller;
 
-import com.example.InternTask.model.Training;
 import com.example.InternTask.model.User;
 import com.example.InternTask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

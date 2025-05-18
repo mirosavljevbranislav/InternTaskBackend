@@ -34,12 +34,8 @@ public class AuthController {
     @PostMapping("/register/user")
     public ResponseEntity<User> addUser(@RequestBody User user) {
         User newUser = new User(user.getName(), user.getPhone(), user.getEmail());
-        boolean added = userService.addUser(newUser);
-        if (added) {
-            return ResponseEntity.ok(newUser);
-        } else {
-            throw new UserCredentialsFailException("User with that phone number already exists.");
-        }
+        userService.addUser(newUser);
+        return ResponseEntity.ok(newUser);
     }
 
     @GetMapping("/login/trainer")
@@ -52,11 +48,7 @@ public class AuthController {
     @PostMapping("/register/trainer")
     public ResponseEntity<Trainer> registerTrainer(@RequestBody Trainer trainer) {
         Trainer newTrainer = new Trainer(trainer.getName(), trainer.getPhone(), trainer.getEmail());
-        boolean added = trainerService.addTrainer(trainer);
-        if (added) {
-            return ResponseEntity.ok(trainer);
-        } else {
-            throw new InvalidTrainerCredentialsException("Something went wrong with registration, please try again.");
-        }
+        trainerService.addTrainer(trainer);
+        return ResponseEntity.ok(newTrainer);
     }
 }
