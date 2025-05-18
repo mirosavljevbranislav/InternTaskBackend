@@ -42,6 +42,7 @@ public class TrainingController {
         Training queuedTraining = trainingDTO.getTraining();
 
         trainingService.queueTrainingService(trainerId.toString(), queuedTraining);
+        System.out.println(trainingDTO.getTraining().getTrainee().getEmail());
         return ResponseEntity.ok(trainingDTO);
     }
 
@@ -62,6 +63,12 @@ public class TrainingController {
             @RequestHeader("X-Trainer-Id") UUID trainerId,
             @RequestParam UUID trainingId){
         trainingService.removeTrainingAsTrainer(trainerId.toString(), trainingId);
+        return ResponseEntity.ok("Training removed successfully");
+    }
+
+    @DeleteMapping("/removeAsUser")
+    public ResponseEntity<String> removeTrainingAsUser(@RequestParam UUID trainerId ,@RequestParam UUID trainingId){
+        trainingService.removeTrainingAsUser(trainerId.toString(), trainingId);
         return ResponseEntity.ok("Training removed successfully");
     }
 

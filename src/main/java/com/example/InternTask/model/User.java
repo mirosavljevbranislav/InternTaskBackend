@@ -10,17 +10,17 @@ public class User implements Serializable{
     private String id;
     private String name;
     private String phone;
+    private String email;
 
-    @JsonIgnore
-    private List<Training> trainings;
 
     public User() {
     }
 
-    public User(String name, String phone) {
+    public User(String name, String phone, String email) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.phone = phone;
+        this.email = email;
     }
 
     public String getId() {
@@ -47,13 +47,23 @@ public class User implements Serializable{
         this.phone = phone;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
     @Override
     public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
+        return "User Details:\n" +
+                "ID: " + id + "\n" +
+                "Name: " + name + "\n" +
+                "Phone: " + phone + "\n" +
+                "Email: " + email + "\n";
     }
+
  
 }

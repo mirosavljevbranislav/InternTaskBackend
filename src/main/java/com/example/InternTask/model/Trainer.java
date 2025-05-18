@@ -12,8 +12,8 @@ public class Trainer extends User{
     private int trainerCode;
     private List<Training> trainings;
 
-    public Trainer(String name, String phone) {
-        super(name, phone);
+    public Trainer(String name, String phone, String email) {
+        super(name, phone, email);
         Random random = new Random();
         this.trainerCode = random.nextInt(1, 10000);
         this.trainings = new ArrayList<>();

@@ -81,13 +81,12 @@ public class Training {
 
     @Override
     public String toString() {
-        return "Training{" +
-                "id=" + id +
-                ", trainerId='" + trainerId + '\'' +
-                ", trainingDuration=" + trainingDuration +
-                ", trainingType='" + trainingType + '\'' +
-                ", trainingTime=" + trainingTime +
-                ", trainee=" + trainee +
-                '}';
+        return "Training Details:\n" +
+                "ID: " + id + "\n" +
+                "Trainer ID: " + trainerId + "\n" +
+                "Duration: " + trainingDuration + " minutes\n" +
+                "Type: " + trainingType + "\n" +
+                "Date & Time: " + trainingTime + "\n" +
+                "Trainee: " + trainee.toString() + "\n";
     }
 }

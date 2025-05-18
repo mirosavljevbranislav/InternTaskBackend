@@ -33,8 +33,7 @@ public class AuthController {
 
     @PostMapping("/register/user")
     public ResponseEntity<User> addUser(@RequestBody User user) {
-        User newUser = new User(user.getName(), user.getPhone());
-
+        User newUser = new User(user.getName(), user.getPhone(), user.getEmail());
         boolean added = userService.addUser(newUser);
         if (added) {
             return ResponseEntity.ok(newUser);
@@ -52,8 +51,7 @@ public class AuthController {
 
     @PostMapping("/register/trainer")
     public ResponseEntity<Trainer> registerTrainer(@RequestBody Trainer trainer) {
-        Trainer newTrainer = new Trainer(trainer.getName(), trainer.getPhone());
-
+        Trainer newTrainer = new Trainer(trainer.getName(), trainer.getPhone(), trainer.getEmail());
         boolean added = trainerService.addTrainer(trainer);
         if (added) {
             return ResponseEntity.ok(trainer);

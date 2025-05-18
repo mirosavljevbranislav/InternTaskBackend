@@ -22,6 +22,4 @@ public class UserController {
         List<User> allUsers = userService.getAllUsers();
         return ResponseEntity.ok(allUsers);
     }
-
-
 }
