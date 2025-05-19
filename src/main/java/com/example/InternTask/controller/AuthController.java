@@ -1,8 +1,6 @@
 package com.example.InternTask.controller;
 
-import com.example.InternTask.exception.TrainerExceptions.InvalidTrainerCredentialsException;
 import com.example.InternTask.exception.TrainerExceptions.TrainerNotFoundException;
-import com.example.InternTask.exception.UserExpcetions.UserCredentialsFailException;
 import com.example.InternTask.exception.UserExpcetions.UserNotFoundException;
 import com.example.InternTask.model.Trainer;
 import com.example.InternTask.model.User;

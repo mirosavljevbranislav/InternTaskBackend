@@ -4,7 +4,6 @@ import com.example.InternTask.model.DTO.QueTrainingDTO;
 import com.example.InternTask.model.Training;
 import com.example.InternTask.repository.MapRepo;
 import com.example.InternTask.service.TrainingService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

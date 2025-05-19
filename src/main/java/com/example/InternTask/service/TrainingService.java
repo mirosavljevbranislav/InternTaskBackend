@@ -4,7 +4,6 @@ import com.example.InternTask.exception.TrainerExceptions.TrainerNotFoundExcepti
 import com.example.InternTask.exception.TrainingExceptions.InvalidTrainingTimeException;
 import com.example.InternTask.exception.TrainingExceptions.TrainingNotFoundException;
 import com.example.InternTask.exception.TrainingExceptions.TrainingOverlapException;
-import com.example.InternTask.model.DTO.QueTrainingDTO;
 import com.example.InternTask.model.Trainer;
 import com.example.InternTask.model.Training;
 import com.example.InternTask.repository.MapRepo;
@@ -81,7 +80,6 @@ public class TrainingService {
         LocalDateTime newStart = queuedTraining.getTrainingTime();
         LocalDateTime newEnd = newStart.plusMinutes(queuedTraining.getTrainingDuration());
 
-        // Check for overlapping trainings in the queue
         for (Training existing : trainingsForTrainer) {
             LocalDateTime existingStart = existing.getTrainingTime();
             int existingDuration = existing.getTrainingDuration();
@@ -90,7 +88,6 @@ public class TrainingService {
                 throw new TrainingOverlapException("The queued training overlaps with an existing one.");
             }
         }
-        // Add the new training to the list if no overlap
         trainingsForTrainer.add(queuedTraining);
     }
 
@@ -104,7 +101,6 @@ public class TrainingService {
 
         Map<String, List<Training>> trainingQueue = mapRepo.getTrainingQueue();
 
-        // Get the list or create a new one if not present
         List<Training> trainingsForTrainer = trainingQueue.computeIfAbsent(trainerId, k -> new ArrayList<>());
         return trainingsForTrainer;
     }
@@ -116,7 +112,6 @@ public class TrainingService {
             throw new TrainerNotFoundException("Trainer not found...");
         }
         List<Training> trainingList = trainer.getTrainings();
-        // Find the training first
         Training removedTraining = null;
         Iterator<Training> iterator = trainingList.iterator();
         while (iterator.hasNext()) {
