@@ -7,10 +7,8 @@ import com.example.InternTask.service.TrainingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/trainings")
@@ -30,29 +28,25 @@ public class TrainingController {
     public ResponseEntity<Training> assignTraining(
             @RequestHeader("X-Trainer-Id") UUID trainerId,
             @RequestBody Training training) {
-        training.setId();
         trainingService.addTraining(trainerId, training);
         return ResponseEntity.ok(training);
     }
 
     @PostMapping("/userAssign")
-    public ResponseEntity<QueTrainingDTO> assignTrainingAsUser( @RequestBody QueTrainingDTO trainingDTO){
-        UUID trainerId = trainingDTO.getTrainerId();
-        Training queuedTraining = trainingDTO.getTraining();
-
-        trainingService.queueTrainingService(trainerId.toString(), queuedTraining);
-        System.out.println(trainingDTO.getTraining().getTrainee().getEmail());
-        return ResponseEntity.ok(trainingDTO);
+    public ResponseEntity<Training> assignTrainingAsUser( @RequestBody QueTrainingDTO trainingDTO){
+        Training training = trainingService.queueTraining(trainingDTO);
+        return ResponseEntity.ok(training);
     }
 
     @GetMapping("/fetchQueue")
-    public ResponseEntity<List<QueTrainingDTO>> fetchTrainingQueue(@RequestHeader("X-Trainer-Id") UUID trainerId){
+    public ResponseEntity<List<Training>> fetchTrainingQueue(
+            @RequestHeader(value = "X-Trainer-Id", required = false, defaultValue = "") UUID trainerId,
+            @RequestHeader(value = "X-Trainee-Id", required = false, defaultValue = "") UUID traineeId){
 
-        List<QueTrainingDTO> queuedTrainings = mapRepo.getTrainingQueue()
-                .getOrDefault(trainerId.toString(), Collections.emptyList())
-                .stream()
-                .map(training -> new QueTrainingDTO(trainerId, training))
-                .collect(Collectors.toList());
+        List<Training> queuedTrainings = trainingService.getQueuedTrainings(
+                trainerId != null ? trainerId.toString() : null,
+                traineeId != null ? traineeId.toString() : null
+        );
 
         return ResponseEntity.ok(queuedTrainings);
     }
@@ -66,8 +60,8 @@ public class TrainingController {
     }
 
     @DeleteMapping("/removeAsUser")
-    public ResponseEntity<String> removeTrainingAsUser(@RequestParam UUID trainerId ,@RequestParam UUID trainingId){
-        trainingService.removeTrainingAsUser(trainerId.toString(), trainingId);
+    public ResponseEntity<String> removeTrainingAsUser(@RequestParam UUID trainingId){
+        trainingService.removeTrainingAsUser(trainingId);
         return ResponseEntity.ok("Training removed successfully");
     }
 

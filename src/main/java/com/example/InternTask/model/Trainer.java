@@ -1,6 +1,6 @@
 package com.example.InternTask.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +65,8 @@ public class Trainer extends User{
                 "ID: " + getId() +
                 "Name: " + getName() +
                 "Phone: " + getPhone() +
-                "trainerCode: " + trainerCode +
-                ", trainings: " + trainings +
+                "trainerCode: " + getTrainerCode() +
+                ", trainings: " + getTrainings() +
                 '}';
     }
 }

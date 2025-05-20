@@ -4,6 +4,7 @@ import com.example.InternTask.exception.TrainerExceptions.TrainerNotFoundExcepti
 import com.example.InternTask.exception.TrainingExceptions.InvalidTrainingTimeException;
 import com.example.InternTask.exception.TrainingExceptions.TrainingNotFoundException;
 import com.example.InternTask.exception.TrainingExceptions.TrainingOverlapException;
+import com.example.InternTask.model.DTO.QueTrainingDTO;
 import com.example.InternTask.model.Trainer;
 import com.example.InternTask.model.Training;
 import com.example.InternTask.repository.MapRepo;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TrainingService {
@@ -70,25 +72,61 @@ public class TrainingService {
         }
         String trainerMessage = "Greetings "+ trainer.getName() + ", a training session has been approved.";
         String userMessage = "Greetings, your training session has been approved.";
-        sendEmail(training, trainer, trainerMessage, userMessage);
-        mapRepo.getTrainers().get(trainerId.toString()).getTrainings().add(training);
-    }
 
-    public void queueTrainingService(String trainerId, Training queuedTraining) {
-        List<Training> trainingsForTrainer = getTrainings(trainerId);
 
-        LocalDateTime newStart = queuedTraining.getTrainingTime();
-        LocalDateTime newEnd = newStart.plusMinutes(queuedTraining.getTrainingDuration());
+        trainer.getTrainings().add(training);
 
-        for (Training existing : trainingsForTrainer) {
-            LocalDateTime existingStart = existing.getTrainingTime();
-            int existingDuration = existing.getTrainingDuration();
-
-            if (isOverlapping(newStart, queuedTraining.getTrainingDuration(), existingStart, existingDuration)) {
-                throw new TrainingOverlapException("The queued training overlaps with an existing one.");
+        for (Map.Entry<String, List<Training>> entry : mapRepo.getTrainingQueue().entrySet()) {
+            List<Training> trainings = entry.getValue();
+            boolean removed = trainings.removeIf(trng -> trng.getId().equals(training.getId()));
+            if (removed) {
+                System.out.println("Removed training with ID: " + training.getId() + " from trainer: " + entry.getKey());
+                break;
             }
         }
-        trainingsForTrainer.add(queuedTraining);
+        sendEmail(training, trainer, trainerMessage, userMessage);
+    }
+
+    public Training queueTraining(QueTrainingDTO dto) {
+        String trainerId = dto.getTrainerId().toString();
+        Training newTraining = new Training(dto.getTraining().getTrainingDuration(),
+                dto.getTraining().getTrainerId(),
+                dto.getTraining().getTrainingType(),
+                dto.getTraining().getTrainingTime(),
+                dto.getTraining().getTrainee());
+        newTraining.setId();
+        Map<String, List<Training>> trainingQueue = mapRepo.getTrainingQueue();
+        List<Training> trainerQueue = trainingQueue.computeIfAbsent(trainerId, k -> new ArrayList<>());
+
+        LocalDateTime newStart = newTraining.getTrainingTime();
+        int newDuration = newTraining.getTrainingDuration();
+
+        for (Training existing : trainerQueue) {
+            if (isOverlapping(newStart, newDuration, existing.getTrainingTime(), existing.getTrainingDuration())) {
+                throw new TrainingOverlapException("Training overlaps with an existing queued training.");
+            }
+        }
+
+        trainerQueue.add(newTraining);
+        return newTraining;
+    }
+
+    public List<Training> getQueuedTrainings(String trainerId, String traineeId) {
+        Map<String, List<Training>> trainingQueue = mapRepo.getTrainingQueue();
+
+        if (trainerId != null && !trainerId.isEmpty()) {
+            return trainingQueue.getOrDefault(trainerId, Collections.emptyList());
+        }
+
+        if (traineeId != null && !traineeId.isEmpty()) {
+
+            return trainingQueue.values().stream()
+                    .flatMap(List::stream)
+                    .filter(training -> training.getTrainee() != null && traineeId.equals(training.getTrainee().getId()))
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
     }
 
     private List<Training> getTrainings(String trainerId) {
@@ -111,27 +149,24 @@ public class TrainingService {
         if (trainer == null) {
             throw new TrainerNotFoundException("Trainer not found...");
         }
-        List<Training> trainingList = trainer.getTrainings();
-        Training removedTraining = null;
-        Iterator<Training> iterator = trainingList.iterator();
-        while (iterator.hasNext()) {
-            Training t = iterator.next();
-            if (t.getId().equals(trainingId)) {
-                removedTraining = t;
-                iterator.remove();
-                break;
-            }
+        List<Training> trainingList = mapRepo.getTrainingQueue().get(trainerId);
+        Training removedTraining = trainingList.stream()
+                .filter(t -> t.getId().equals(trainingId))
+                .findFirst()
+                .orElse(null);
+
+        if (removedTraining != null) {
+            trainingList.remove(removedTraining);
+        } else {
+            throw new TrainingNotFoundException("Training not found...");
         }
+
         String trainerMessage = "Greetings "+ trainer.getName() + ", a training session has been canceled.";
         String userMessage = "Greetings, unfortunately your training session has been canceled.";
         sendEmail(removedTraining, trainer, trainerMessage, userMessage);
-        boolean removed = trainingList.removeIf(t -> t.getId().equals(trainingId));
-        if (!removed) {
-            throw new TrainingNotFoundException("Training with the given ID was not found.");
-        }
     }
 
-    public void removeTrainingAsUser(String trainerId, UUID trainingId) {
+    public void removeTrainingAsUser(UUID trainingId) {
         boolean trainingRemoved = mapRepo.getTrainingQueue().values().stream()
                 .anyMatch(trainings -> trainings.removeIf(t -> t.getId().equals(trainingId)));
         if (!trainingRemoved) {

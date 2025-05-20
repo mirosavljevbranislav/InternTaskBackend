@@ -51,7 +51,7 @@ public class TrainerService {
 
     public Optional<Trainer> findTrainerById(String trainerId) {
         return mapRepo.getTrainers().values().stream()
-                .filter(t -> t.getId().equals(trainerId))  // getId() from User superclass
+                .filter(t -> t.getId().equals(trainerId))
                 .findFirst();
     }
 

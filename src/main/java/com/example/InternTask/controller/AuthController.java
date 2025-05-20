@@ -45,8 +45,7 @@ public class AuthController {
 
     @PostMapping("/register/trainer")
     public ResponseEntity<Trainer> registerTrainer(@RequestBody Trainer trainer) {
-        Trainer newTrainer = new Trainer(trainer.getName(), trainer.getPhone(), trainer.getEmail());
         trainerService.addTrainer(trainer);
-        return ResponseEntity.ok(newTrainer);
+        return ResponseEntity.ok(trainer);
     }
 }

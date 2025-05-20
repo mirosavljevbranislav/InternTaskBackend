@@ -1,12 +1,12 @@
 package com.example.InternTask.exception;
 
+import com.example.InternTask.exception.AuthExceptions.InvalidEmailException;
+import com.example.InternTask.exception.AuthExceptions.InvalidPhoneNumberException;
 import com.example.InternTask.exception.TrainerExceptions.InvalidTrainerCredentialsException;
 import com.example.InternTask.exception.TrainerExceptions.ScheduleNotFoundException;
 import com.example.InternTask.exception.TrainerExceptions.TrainerNotFoundException;
 import com.example.InternTask.exception.TrainingExceptions.InvalidTrainingTimeException;
 import com.example.InternTask.exception.TrainingExceptions.TrainingOverlapException;
-import com.example.InternTask.exception.AuthExceptions.InvalidEmailException;
-import com.example.InternTask.exception.AuthExceptions.InvalidPhoneNumberException;
 import com.example.InternTask.exception.UserExpcetions.UserAlreadyExistsException;
 import com.example.InternTask.exception.UserExpcetions.UserCredentialsFailException;
 import com.example.InternTask.exception.UserExpcetions.UserNotFoundException;
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidEmailException.class)
     public ResponseEntity<String> invalidEmailException(InvalidEmailException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     @ExceptionHandler(UserCredentialsFailException.class)
@@ -54,12 +54,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidTrainingTimeException.class)
     public ResponseEntity<String> handleInvalidTime(InvalidTrainingTimeException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     @ExceptionHandler(TrainingOverlapException.class)
     public ResponseEntity<String> handleOverlap(TrainingOverlapException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     @ExceptionHandler(ScheduleNotFoundException.class)

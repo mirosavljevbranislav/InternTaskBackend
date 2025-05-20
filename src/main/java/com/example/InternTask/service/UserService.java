@@ -7,7 +7,8 @@ import com.example.InternTask.model.User;
 import com.example.InternTask.repository.MapRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -31,7 +32,7 @@ public class UserService {
             throw new UserAlreadyExistsException("User with that email already exists.");
         }
         if (mapRepo.getUsers().containsKey(phone)) {
-            throw new UserAlreadyExistsException("User with that phone already exists"); // User already exists
+            throw new UserAlreadyExistsException("User with that phone already exists");
         }
         mapRepo.getUsers().put(phone, user);
     }
